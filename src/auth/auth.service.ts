@@ -65,7 +65,7 @@ export class AuthService {
       email: registerDto.email,
       name: registerDto.name,
       password: hashedPassword,
-      role: UserRole.USER,
+      role: UserRole.ADMIN,
     });
 
     const savedUser = await this.usersRepository.save(newlyCreatedUser);
@@ -93,7 +93,7 @@ export class AuthService {
 
     // generate the tokens
     const tokens = this.generateTokens(user);
-    const { password, ...result } = tokens;
+    const { password, ...result } = user;
     return {
       user: result,
       ...tokens,
@@ -122,7 +122,18 @@ export class AuthService {
   }
 
   // find current user by ID
+  async getUserById(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
 
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const { password, ...result } = user;
+    return result;
+  }
   // find current user by ID
 
   private async hashPassword(password: string): Promise<string> {
