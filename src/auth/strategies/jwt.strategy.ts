@@ -21,6 +21,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ...user,
         role: payload.role, // user & admin
       };
+      // return {
+      //   id: user.id,
+      //   name: user.name,
+      //   email: user.email,
+      //   role: user.role,
+      // };
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

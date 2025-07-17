@@ -17,7 +17,9 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    bcrypt.hash('123456', 10).then(console.log)
+  }
 
   async register(registerDto: RegisterDto) {
     const existingUser = await this.usersRepository.findOne({

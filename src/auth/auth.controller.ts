@@ -1,7 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { Roles } from './decorators/roles.decorators';
+import { UserRole } from './entities/user.entity';
+import { RolesGuard } from './guards/roles-guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,10 +29,20 @@ export class AuthController {
 
   // protected route (Authorization)
   // current user route
-
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@CurrentUser() user: any) {
+    return user;
+  }
   // current user route
 
   // protected route (Authorization)
   // check if the user role is an admin user
   // create admin route
+  @Post('create-admin')
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  createAdmin(@Body() registerDto: RegisterDto) {
+    return this.authService.createAdmin(registerDto);
+  }
 }
